@@ -1,0 +1,47 @@
+sourceSets {
+	integrationTest {
+		java.srcDir file('src/integration-test/java')
+		scala.srcDir file('src/integration-test/scala')
+		resources.srcDir file('src/integration-test/resources')
+		java {
+			compileClasspath += main.output + test.output
+			runtimeClasspath += main.output + test.output
+		}
+		scala {
+			compileClasspath += main.output + test.output
+			runtimeClasspath += main.output + test.output
+		}
+	}
+}
+
+idea {
+	module {
+		testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
+		testSourceDirs += project.sourceSets.integrationTest.scala.srcDirs
+		testSourceDirs += project.sourceSets.integrationTest.resources.srcDirs
+	}
+}
+
+configurations {
+	integrationTestCompile.extendsFrom testCompile
+	integrationTestRuntime.extendsFrom testRuntime
+}
+
+test {
+	delete 'build/test-t'
+}
+
+task integrationTest(type: Test) {
+	delete 'build/test-it'
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+	mustRunAfter test
+}
+
+task testReport(type: TestReport) {
+	destinationDir = file("build/reports/tests/combined")
+	reportOn test, integrationTest
+	mustRunAfter integrationTest
+}
+
+check.dependsOn testReport

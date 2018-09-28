@@ -1,0 +1,17 @@
+ext {
+	versions = [
+				scala_lang: '2.11',
+				scala: '2.11.8',
+				typesafe_config: '1.3.3',
+
+				scalatest: '3.0.4',
+				junit: '4.12',
+				cucumber_scala: '2.0.1',
+				cucumber_junit: '2.4.0',
+				jacoco: '0.8.0',
+	]
+
+	nexusURLs = [
+				'https://repo.maven.apache.org/maven2/',
+	]
+}
