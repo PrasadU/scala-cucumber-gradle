@@ -1,44 +1,44 @@
 plugins {
-	id 'project-report'
-	id 'scala'
-	id 'idea'
-	id 'com.github.johnrengelman.shadow' version '2.0.4'
+    id 'project-report'
+    id 'scala'
+    id 'idea'
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
 
 apply from: project.rootDir.toString() + '/versions.gradle'
 
 compileJava {
-	sourceCompatibility = 1.8
-	targetCompatibility = 1.8
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 }
 
 tasks.withType(ScalaCompile) {
-	scalaCompileOptions.additionalParameters = ["-feature"]
-}
-
-tasks.withType(Test) {
-	testLogging {showStandardStreams = true}
-	if (File.separator == '\\') systemProperty 'hadoop.home.dir', project.rootDir.toString() + '/src/test/resources'
+    scalaCompileOptions.additionalParameters = ["-feature"]
 }
 
 repositories {
-	mavenLocal()
-	nexusURLs.each { nexusURL -> maven { url "$nexusURL" } }
+    mavenLocal()
+    nexusURLs.each { nexusURL -> maven { url "$nexusURL" } }
 }
 
 configurations {
-	testCompile.extendsFrom compileOnly
+    testImplementation.extendsFrom compileOnly
 }
 
 apply from: project.rootDir.toString() + '/integration-test.gradle'
 
+tasks.withType(Test) {
+    testLogging {showStandardStreams = true}
+    if (File.separator == '\\') systemProperty 'hadoop.home.dir', project.rootDir.toString() + '/src/test/resources'
+}
+
 dependencies {
-	compileOnly 'org.scala-lang:scala-library:' + versions.scala
-	compileOnly 'com.typesafe:config:' + versions.typesafe_config
+    compileOnly 'org.scala-lang:scala-library:' + versions.scala
+    implementation 'com.typesafe:config:' + versions.typesafe_config
 
-	testCompile 'org.scalatest:scalatest_' + versions.scala_lang + ':' + versions.scalatest
-	testCompile 'junit:junit:' + versions.junit
+    testImplementation 'junit:junit:' + versions.junit
+    testImplementation 'org.scalatest:scalatest_' + versions.scala_lang + ':' + versions.scalatest
 
-	integrationTestCompile 'io.cucumber:cucumber-scala_' + versions.scala_lang + ':' + versions.cucumber_scala
-	integrationTestCompile 'io.cucumber:cucumber-junit:' + versions.cucumber_junit
+    intTestImplementation 'io.cucumber:cucumber-scala_' + versions.scala_lang + ':' + versions.cucumber_scala
+    intTestImplementation 'io.cucumber:cucumber-junit:' + versions.cucumber_scala
 }

@@ -1,47 +1,55 @@
 sourceSets {
-	integrationTest {
-		java.srcDir file('src/integration-test/java')
-		scala.srcDir file('src/integration-test/scala')
-		resources.srcDir file('src/integration-test/resources')
-		java {
-			compileClasspath += main.output + test.output
-			runtimeClasspath += main.output + test.output
-		}
-		scala {
-			compileClasspath += main.output + test.output
-			runtimeClasspath += main.output + test.output
-		}
-	}
+    intTest {
+        java.srcDir file('src/integration-test/java')
+        scala.srcDir file('src/integration-test/scala')
+        resources.srcDir file('src/integration-test/resources')
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+        }
+        scala {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+        }
+    }
 }
 
 idea {
-	module {
-		testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
-		testSourceDirs += project.sourceSets.integrationTest.scala.srcDirs
-		testSourceDirs += project.sourceSets.integrationTest.resources.srcDirs
-	}
+    module {
+        testSourceDirs += project.sourceSets.intTest.java.srcDirs
+        testSourceDirs += project.sourceSets.intTest.scala.srcDirs
+        testSourceDirs += project.sourceSets.intTest.resources.srcDirs
+    }
 }
 
 configurations {
-	integrationTestCompile.extendsFrom testCompile
-	integrationTestRuntime.extendsFrom testRuntime
+    intTestImplementation.extendsFrom testImplementation
+    intTestRuntimeOnly.extendsFrom testRuntimeOnly, intTestImplementation
 }
 
 test {
-	delete 'build/test-t'
+    delete 'build/test-out'
 }
 
 task integrationTest(type: Test) {
-	delete 'build/test-it'
-	testClassesDirs = sourceSets.integrationTest.output.classesDirs
-	classpath = sourceSets.integrationTest.runtimeClasspath
-	mustRunAfter test
+    delete 'build/intTest-out'
+
+    testClassesDirs = sourceSets.intTest.output.classesDirs
+    classpath = sourceSets.intTest.runtimeClasspath
+    mustRunAfter test
 }
 
+task printCP {
+    doFirst {
+        configurations.intTestRuntime.each { println it }
+    }
+}
+integrationTest.dependsOn printCP
+
 task testReport(type: TestReport) {
-	destinationDir = file("build/reports/tests/combined")
-	reportOn test, integrationTest
-	mustRunAfter integrationTest
+    destinationDir = file("build/reports/tests/combined")
+    reportOn test, integrationTest
+    mustRunAfter integrationTest
 }
 
 check.dependsOn testReport

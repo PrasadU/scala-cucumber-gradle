@@ -1,4 +1,4 @@
-package com.test
+package com.cep
 
 import cucumber.api.CucumberOptions
 import cucumber.api.junit.Cucumber
@@ -10,5 +10,5 @@ import org.junit.runner.RunWith
 	glue = Array("com.test.steps")
 )
 object IntegrationTests {
-	
+
 }
